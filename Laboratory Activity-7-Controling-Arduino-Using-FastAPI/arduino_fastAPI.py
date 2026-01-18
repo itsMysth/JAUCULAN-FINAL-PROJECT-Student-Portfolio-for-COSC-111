@@ -2,23 +2,14 @@ from fastapi import FastAPI
 import serial
 import time
 
-# -------------------------------
-# Arduino Serial Setup
-# -------------------------------
-SERIAL_PORT = "COM3"  # change if needed
+SERIAL_PORT = "COM3"  
 BAUD_RATE = 9600
 
 arduino = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1)
-time.sleep(2)  # allow Arduino reset
+time.sleep(2)
 
-# -------------------------------
-# FastAPI Setup
-# -------------------------------
 app = FastAPI(title="Arduino LED Controller API")
 
-# -------------------------------
-# Helper Function
-# -------------------------------
 def send_to_arduino(cmd: str):
     """
     Send a single-character command + newline to Arduino
@@ -27,11 +18,6 @@ def send_to_arduino(cmd: str):
     arduino.flush()
     return {"command_sent": cmd}
 
-# -------------------------------
-# API Endpoints
-# -------------------------------
-
-# Turn all LEDs ON
 @app.get("/led/on")
 def led_all_on():
     responses = []
@@ -39,7 +25,6 @@ def led_all_on():
         responses.append(send_to_arduino(cmd))
     return {"status": "all LEDs ON", "details": responses}
 
-# Turn all LEDs OFF
 @app.get("/led/off")
 def led_all_off():
     responses = []
@@ -47,7 +32,6 @@ def led_all_off():
         responses.append(send_to_arduino(cmd))
     return {"status": "all LEDs OFF", "details": responses}
 
-# Toggle individual LED
 @app.get("/led/{color}")
 def led_color(color: str):
     color = color.lower()
@@ -62,3 +46,4 @@ def led_color(color: str):
 
     response = send_to_arduino(cmd)
     return {"status": f"{color} LED toggled", "details": response}
+
