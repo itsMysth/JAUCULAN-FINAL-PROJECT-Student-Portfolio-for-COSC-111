@@ -1,0 +1,3 @@
+Niel Allen S. Jauculan
+BSCS 4-B
+COSC 111B - CS ELECTIVE 3 (INTERNET OF THINGS) (1st Sem 25-26)
