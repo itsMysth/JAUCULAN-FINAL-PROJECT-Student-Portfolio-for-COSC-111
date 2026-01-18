@@ -4,16 +4,13 @@
 #define GREEN_LED 11
 
 String inputString = "";
-bool manualMode = true; // Default: MANUAL mode
-String activeLED = "NONE"; // Tracks which LED is active
-int brightness = 0; // Current light intensity (0-100%)
+bool manualMode = true; 
+String activeLED = "NONE"; 
+int brightness = 0; 
 
-// Adjustable thresholds
-int greenThreshold = 40; // upper limit for GREEN (%)
-int redThreshold   = 70; // lower limit for RED (%)
-// YELLOW automatically fills the range between GREEN and RED
+int greenThreshold = 40; 
+int redThreshold   = 70; 
 
-// Default thresholds
 const int DEFAULT_GREEN = 40;
 const int DEFAULT_RED = 70;
 
@@ -26,19 +23,15 @@ void setup() {
 }
 
 void loop() {
-  // Read photo value in both modes
   int photoValue = analogRead(PHOTO_PIN);
-  brightness = map(photoValue, 0, 1023, 0, 100); // 0–100%
+  brightness = map(photoValue, 0, 1023, 0, 100); 
 
-  // Update LEDs according to thresholds
   updateLEDs();
 
-  // Display status
   displayStatus();
 
   delay(500);
 
-  // Check Serial input
   if (Serial.available()) {
     inputString = Serial.readStringUntil('\n');
     inputString.trim();
@@ -47,7 +40,6 @@ void loop() {
   }
 }
 
-// Update LEDs based on brightness and thresholds
 void updateLEDs() {
   if (brightness <= greenThreshold) {
     digitalWrite(RED_LED, LOW);
@@ -55,7 +47,7 @@ void updateLEDs() {
     digitalWrite(GREEN_LED, HIGH);
     activeLED = "GREEN";
   } 
-  else if (brightness <= redThreshold) { // YELLOW is in between
+  else if (brightness <= redThreshold) {
     digitalWrite(RED_LED, LOW);
     digitalWrite(YELLOW_LED, HIGH);
     digitalWrite(GREEN_LED, LOW);
@@ -69,7 +61,6 @@ void updateLEDs() {
   }
 }
 
-// Handle Serial commands in manual mode
 void handleCommand(String command) {
   if (command.startsWith("MODE")) {
     String modeType = command.substring(5);
@@ -81,7 +72,6 @@ void handleCommand(String command) {
     } 
     else if (modeType == "AUTO") {
       manualMode = false;
-      // Reset thresholds to default when switching to automatic
       greenThreshold = DEFAULT_GREEN;
       redThreshold = DEFAULT_RED;
       Serial.println("Switched to AUTOMATIC mode. Thresholds reset to default.");
@@ -109,7 +99,6 @@ void handleCommand(String command) {
       if (value < 0) value = 0;
       if (value > 100) value = 100;
 
-      // Directly update thresholds
       if (action == "LOW") {
         greenThreshold = value;
         Serial.print("GREEN threshold updated to: ");
@@ -135,7 +124,6 @@ void handleCommand(String command) {
   }
 }
 
-// Display the current status
 void displayStatus() {
   Serial.print("Light Intensity: ");
   Serial.print(brightness);
@@ -144,7 +132,6 @@ void displayStatus() {
   Serial.print(" | Mode: ");
   Serial.print(manualMode ? "MANUAL" : "AUTOMATIC");
 
-  // Only show environment in AUTOMATIC mode
   if (!manualMode) {
     String environment = "";
     if (brightness <= 40) environment = "Cloudy";
